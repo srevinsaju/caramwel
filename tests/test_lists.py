@@ -75,6 +75,16 @@ class ListsTests(ParserTestCase):
         result = "[list:[@bullet_sub_list@:[@colon_sub_list@:[@bullet_sub_list@:[@semi_colon_sub_list@:[@number_sub_list@:[@bullet_sub_list@:[colon_list_leaf:[raw_text:' this is '  internal_link:[page_name:'Template:correct']  raw_text:' syntax!']]]]]]]]]"
         self.parsed_equal_string(source, result, None)
 
+    def test_multiline_semicolon_crlf_list(self):
+        source = """; This example...\r\n: shows crlf\r\n"""
+        result = """body:
+   list:
+      semi_colon_list_leaf:
+         raw_text: This example...
+      colon_list_leaf:
+         raw_text: shows crlf"""
+        self.parsed_equal_tree(source, result, None)
+
     def test_multiline_semicolon_list(self):
         source = """; This example...
 : sub
@@ -95,6 +105,7 @@ class ListsTests(ParserTestCase):
       semi_colon_list_leaf:
          raw_text: AST"""
         self.parsed_equal_tree(source, result, None)
+
     def test_multiline_bullet_list(self):
         source = """* This example...
 ** shows the shape...

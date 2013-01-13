@@ -16,7 +16,7 @@ class CommentsTests(ParserTestCase):
       preformatted_line:
          preformatted_inline:
             raw_text:This is a preformatted paragraph.
-         CR:
+         LF:
 """
         self.parsed_equal_tree(source, result, None)
 
