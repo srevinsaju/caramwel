@@ -78,6 +78,12 @@ def toolset():
     def render_preformatted(node):
         pass
 
+    def render_code(node):
+        pass
+
+    def render_code_open(node):
+        pass
+
     def render_hr(node):
         pass
 

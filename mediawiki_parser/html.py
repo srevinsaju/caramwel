@@ -246,6 +246,12 @@ def toolset(allowed_tags, allowed_autoclose_tags, allowed_attributes, interwiki,
     def render_preformatted(node):
         node.value = '<pre>' + content(node) +  '</pre>\n'
 
+    def render_code(node):
+        node.value = content(node) + '</code>\n'
+
+    def render_code_open(node):
+        node.value = node.snippet
+
     def render_hr(node):
         node.value = '<hr />\n'
 

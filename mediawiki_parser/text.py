@@ -223,6 +223,12 @@ def toolset(interwiki, namespaces):
     def render_preformatted(node):
         node.value = content(node) + '\n'
 
+    def render_code(node):
+        node.value = content(node)
+
+    def render_code_open(node):
+        node.value = ''
+
     def render_hr(node):
         node.value = '------'
 
