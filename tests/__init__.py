@@ -20,16 +20,6 @@ class TestCase(UnitTestCase):
             raise
 
 
-def setup_module():
-    import os
-    if os.stat("preprocessor.pijnu").st_mtime - os.stat("preprocessorParser.py").st_mtime > 1:
-        preprocessorGrammar = file("preprocessor.pijnu").read()
-        makeParser(preprocessorGrammar)
-
-    if os.stat("mediawiki.pijnu").st_mtime - os.stat("mediawikiParser.py").st_mtime > 1:
-        mediawikiGrammar = file("mediawiki.pijnu").read()
-        makeParser(mediawikiGrammar)
-
 
 class PreprocessorTestCase(TestCase):
     def _grammar(self, templates):

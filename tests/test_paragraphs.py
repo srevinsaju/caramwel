@@ -1,6 +1,6 @@
 # -*- coding: utf8 -*-
 
-from mediawiki_parser.tests import ParserTestCase
+from . import ParserTestCase
 
 
 class ParagraphsTests(ParserTestCase):

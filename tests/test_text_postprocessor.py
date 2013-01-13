@@ -1,6 +1,6 @@
 # -*- coding: utf8 -*-
 
-from mediawiki_parser.tests import PostprocessorTestCase
+from . import PostprocessorTestCase
 
 
 class TextBackendTests(PostprocessorTestCase):

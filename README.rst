@@ -7,12 +7,12 @@ This is a parser for MediaWiki's (MW) syntax. It's goal is to transform wikitext
 Requirements
 ============
 
-This parser relies on Pijnu. You must install the latest version of Pijnu, available at: https://github.com/peter17/pijnu
+This parser relies on Pijnu. While the original Pijnu is available at: https://github.com/peter17/pijnu, this fork relies on changes from https://github.com/nickburlett/pijnu
 Do not use the version from http://spir.wikidot.com, which is outdated.
 
 
 How it works
-============ 
+============
 
 Two files, preprocessor.pijnu and mediawiki.pijnu describe the MW syntax using patterns that form a grammar. Another Python tool called Pijnu will interpret those grammars and use them to match the wikitext content and build the AST.
 
@@ -20,6 +20,16 @@ Then, specific Python functions will render the leaves of the AST into the wante
 
 The reason why we use two grammars is that we will first substitute the templates in the wikitext with a preprocessor before actually parsing the content of the page.
 
+Building the parsers
+====================
+
+The preprocessor and mediwiki parsers must be built from the Pijnu
+grammars before you can use mediawiki-parser. You can build them through
+setup.py, possibly setting the PYTHONPATH to point at pijnu:
+
+::
+ 
+ env PYTHONPATH=path/to/pijnu python setup.py build_parsers
 
 How to test
 ===========
@@ -42,9 +52,7 @@ Install nose and run:
 ::
 
  cd /PATH/TO/mediawiki-parser/
- ln -s ../mediawiki-parser/ mediawiki_parser
- export PYTHONPATH=/PATH/TO/mediawiki-parser/:/PATH/TO/pijnu/
- nosetests tests
+ env PYTHONPATH=/PATH/TO/pijnu/ nosetests tests
 
 How to use in a program
 =======================

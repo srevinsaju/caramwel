@@ -1,6 +1,6 @@
 # -*- coding: utf8 -*-
 
-from mediawiki_parser.tests import PreprocessorTestCase
+from . import PreprocessorTestCase
 
 
 class TemplatesTests(PreprocessorTestCase):
