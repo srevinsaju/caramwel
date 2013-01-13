@@ -12,9 +12,10 @@ def replace_by_8_spaces(node):
 <definition>
 # Codes
 
-    LF                      : '\x0a'
-    CR                      : '\x0d'
-    EOL                     : LF / CR                                                               : drop
+    LF                      : '\x0d'
+    CR                      : '\x0a'
+    CRLF                    : "\x0a\x0d"
+    EOL                     : CRLF / LF / CR                                                        : drop
     L_BRACKET               : "["                                                                   : drop
     R_BRACKET               : "\]"                                                                  : drop
     L_BRACE                 : "{"                                                                   : drop

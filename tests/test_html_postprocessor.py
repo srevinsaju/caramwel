@@ -475,8 +475,6 @@ lo'''
 """
         result = """<dl>
 \t<dd> item 1</dd>
-</dl>
-<dl>
 \t<dt> this is <em>italic</em></dt>
 </dl>
 <ul>
@@ -524,18 +522,18 @@ lo'''
 </ul>
 <dl>
 \t<dt> level 1</dt>
-\t<dt><ol>
+\t<dd><ol>
 \t\t<li>level 2</li>
 </ol>
-</dt>
-\t<dt><ol>
+</dd>
+\t<dd><ol>
 \t\t<li><dl>
 \t\t\t<dt>level 3</dt>
 </dl>
 </li>
 </ol>
-</dt>
-\t<dt><ol>
+</dd>
+\t<dd><ol>
 \t\t<li><ol>
 \t\t\t<li><ol>
 \t\t\t\t<li>level 4</li>
@@ -544,8 +542,8 @@ lo'''
 </ol>
 </li>
 </ol>
-</dt>
-\t<dt><ul>
+</dd>
+\t<dd><ul>
 \t\t<li><ul>
 \t\t\t<li><ol>
 \t\t\t\t<li>level 4</li>
@@ -554,8 +552,8 @@ lo'''
 </ul>
 </li>
 </ul>
-</dt>
-\t<dt><ul>
+</dd>
+\t<dd><ul>
 \t\t<li><dl>
 \t\t\t<dt><ol>
 \t\t\t\t<li><ul>
@@ -570,7 +568,7 @@ lo'''
 </dl>
 </li>
 </ul>
-</dt>
+</dd>
 </dl>
 <ul>
 \t<li> end</li>

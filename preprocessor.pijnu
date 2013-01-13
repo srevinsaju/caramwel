@@ -6,9 +6,10 @@ def replace_by_space(node):
 <definition>
 # Codes
 
-    LF                      : '\x0a'
-    CR                      : '\x0d'
-    EOL                     : LF / CR
+    LF                      : '\x0d'
+    CR                      : '\x0a'
+    CRLF                    : "\x0a\x0d"
+    EOL                     : CRLF / LF / CR 
     TAB                     : "	"
     L_BRACKET               : "["
     R_BRACKET               : "\]"
@@ -74,7 +75,8 @@ def replace_by_space(node):
 
 # Templates
 
-    value_content           : (inline / (!(SPACETABEOL* (TEMPLATE_END / PIPE)) (any_char / EOL)))*  : keep
+    EOL_KEEP                : EOL                                                                   : restore
+    value_content           : (inline / (!(SPACETABEOL* (TEMPLATE_END / PIPE)) (any_char / EOL_KEEP)))*  : keep
     parameter_value         : value_content SPACETABEOL*
     optional_value          : parameter_value?
     parameter_equal         : SPACETABEOL* EQUAL SPACETABEOL*

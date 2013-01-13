@@ -281,13 +281,35 @@ def toolset(allowed_tags, allowed_autoclose_tags, allowed_attributes, interwiki,
         result += '</dl>\n'
         return result
 
+    def render_dl(list, level):
+        indent = level * '\t'
+        result = '<dl>\n'
+        #import pdb; pdb.set_trace()
+        def tagtype(value):
+            if value.tag in ['semi_colon_list_leaf', '@semi_colon_sub_list@']: 
+                return 'dt'
+            else:
+                return 'dd'
+        for i in range(len(list)):
+            tagname = tagtype(list[i])
+            result += indent + '<%s>'%tagname + content(list[i]) +  '</%s>\n'%tagname
+        result += '</dl>\n'
+        return result
+
     def collapse_list(list):
+        def _equiv( l1, l2 ):
+            equivs = [ ('bullet_list_leaf', '@bullet_sub_list@')
+                     , ('number_list_leaf', '@number_sub_list@')
+                     , ('colon_list_leaf', '@colon_sub_list@')
+                     , ('semi_colon_list_leaf', '@semi_colon_sub_list@')
+                     ]
+            for t1, t2 in equivs:
+                if l1.tag == t1 and l2.tag == t2:
+                    return True
+            return False
         i = 0
         while i+1 < len(list):
-            if list[i].tag == 'bullet_list_leaf' and list[i+1].tag == '@bullet_sub_list@' or \
-               list[i].tag == 'number_list_leaf' and list[i+1].tag == '@number_sub_list@' or \
-               list[i].tag == 'colon_list_leaf' and list[i+1].tag == '@colon_sub_list@' or \
-               list[i].tag == 'semi_colon_list_leaf' and list[i+1].tag == '@semi_colon_sub_list@':
+            if _equiv(list[i], list[i+1]):
                 list[i].value.append(list[i+1].value[0])
                 list.pop(i+1)
             else:
@@ -298,7 +320,11 @@ def toolset(allowed_tags, allowed_autoclose_tags, allowed_attributes, interwiki,
 
     def select_items(nodes, i, value, level):
         list_tags = ['bullet_list_leaf', 'number_list_leaf', 'colon_list_leaf', 'semi_colon_list_leaf']
-        list_tags.remove(value)
+        if isinstance(value, list):
+            for v in value:
+                list_tags.remove(v)
+        else:
+            list_tags.remove(value)
         if isinstance(nodes[i].value, Nodes):
             render_lists(nodes[i].value, level + 1)
         items = [nodes[i]]
@@ -315,10 +341,9 @@ def toolset(allowed_tags, allowed_autoclose_tags, allowed_attributes, interwiki,
                 list[i].value = render_ul(select_items(list, i, 'bullet_list_leaf', level), level)
             elif list[i].tag == 'number_list_leaf' or list[i].tag == '@number_sub_list@':
                 list[i].value = render_ol(select_items(list, i, 'number_list_leaf', level), level)
-            elif list[i].tag == 'colon_list_leaf' or list[i].tag == '@colon_sub_list@':
-                list[i].value = render_dd(select_items(list, i, 'colon_list_leaf', level), level)
-            elif list[i].tag == 'semi_colon_list_leaf' or list[i].tag == '@semi_colon_sub_list@':
-                list[i].value = render_dt(select_items(list, i, 'semi_colon_list_leaf', level), level)
+            elif list[i].tag == 'colon_list_leaf' or list[i].tag == '@colon_sub_list@' \
+                 or list[i].tag == 'semi_colon_list_leaf' or list[i].tag == '@semi_colon_sub_list@':
+                list[i].value = render_dl(select_items(list, i, ['semi_colon_list_leaf', 'colon_list_leaf'], level), level)
             i += 1
 
     def render_list(node):

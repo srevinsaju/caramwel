@@ -1,18 +1,34 @@
 # -*- coding: utf8 -*-
-from unittest import TestCase
+from unittest import TestCase as UnitTestCase
 
 from pijnu import makeParser
 
 from mediawiki_parser import preprocessor, raw, text, html
 
+class TestCase(UnitTestCase):
+    def assertEquals(self, x, y, *args, **kwargs):
+        try:
+            return super(TestCase, self).assertEquals(x, y, *args, **kwargs)
+        except AssertionError:
+            if isinstance(x, basestring) and isinstance(y, basestring):
+                import difflib
+                print "%s"%x
+                print "*****\n%s"%y
+                s = difflib.SequenceMatcher(a=x, b=y)
+                for opcode in s.get_opcodes():
+                    print "%6s a[%d:%d] b[%d:%d]" % opcode
+            raise
 
 
 def setup_module():
-    preprocessorGrammar = file("preprocessor.pijnu").read()
-    makeParser(preprocessorGrammar)
+    import os
+    if os.stat("preprocessor.pijnu").st_mtime - os.stat("preprocessorParser.py").st_mtime > 1:
+        preprocessorGrammar = file("preprocessor.pijnu").read()
+        makeParser(preprocessorGrammar)
 
-    mediawikiGrammar = file("mediawiki.pijnu").read()
-    makeParser(mediawikiGrammar)
+    if os.stat("mediawiki.pijnu").st_mtime - os.stat("mediawikiParser.py").st_mtime > 1:
+        mediawikiGrammar = file("mediawiki.pijnu").read()
+        makeParser(mediawikiGrammar)
 
 
 class PreprocessorTestCase(TestCase):
