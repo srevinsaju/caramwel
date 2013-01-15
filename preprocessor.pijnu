@@ -81,6 +81,7 @@ def replace_by_space(node):
 # Templates
 
     EOL_KEEP                : EOL                                                                   : restore
+    TAB_KEEP                : TAB                                                                   : restore
     value_content           : (inline / (!(SPACETABEOL* (TEMPLATE_END / PIPE)) (any_char / EOL_KEEP)))*  : keep
     parameter_value         : value_content SPACETABEOL*
     optional_value          : parameter_value?
@@ -109,7 +110,7 @@ def replace_by_space(node):
     eol_to_space            : EOL*                                                                  : replace_by_space
     nowiki_text             : (!NOWIKI_END (any_char/eol_to_space))*                                : join
     nowiki                  : NOWIKI_BEGIN nowiki_text NOWIKI_END                                   : liftValue
-    code_text               : (!CODE_END (any_char/eol_to_space))*                                  : join
+    code_text               : (!CODE_END (TAB_KEEP/any_char/EOL_KEEP))*                             : join
     code                    : CODE_BEGIN code_text CODE_END                                         : restore liftValue
 
 # Text types

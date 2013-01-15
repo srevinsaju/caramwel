@@ -229,6 +229,9 @@ def toolset(interwiki, namespaces):
     def render_code_open(node):
         node.value = ''
 
+    def render_code_text(node):
+        node.value = content(node)
+
     def render_hr(node):
         node.value = '------'
 

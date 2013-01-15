@@ -84,6 +84,9 @@ def toolset():
     def render_code_open(node):
         pass
 
+    def render_code_text(node):
+        pass
+
     def render_hr(node):
         pass
 

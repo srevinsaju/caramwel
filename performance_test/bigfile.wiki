@@ -1,0 +1,329 @@
+MULTI 5.x introduced an extremely powerful python interface to a large percentage of MULTI's basic functionaltiy.  This is well documented in the  [http://library.ghs.com/manuals/trunk/online/script.pdf docs], but it can be a bit daunting working your way through all the tutorials there.  In response, this is my attempt to take a few common tasks I've seen come up and demonstrate how to implement them in Python.
+
+==Brand new to python?==
+A few things to note that may catch new python users unaware:
+* python is whitespace sensitive - indentation must match, and is used to determine scope, end of loops, etc.
+* variables come into existance on first use - no need to declare something before using it unless you're just wanting to be clear
+* python has a huge set of things included if you import them - see the python website for docs [http://www.python.org/doc/].  If you're trying to solve a problem that you expect someone else has seen, chances are good there's a module already present that could help.  For example, things like using ftp clients or telnet sessions shouldn't require additional packages.
+* python users tend to like to encapsulate files inside of classes which promotes the ability to reuse them from other contexts.  A common idiom is: 
+<code lang="python">class foo:
+    def bar(self):
+       ...
+
+if __name__ == "__main__":
+  f = foo()
+  f.bar()
+</code>
+By doing this, you can then import the class from another file and use it there, or if you just run it, it will create a single instance and use just this file.
+* As of MULTI 6.1, our python version is 2.3 which is fairly ancient.  Modern tutorials may be leaning towards 3.0-like syntax, and not be compatible with our version.  Library documentation mentions what versions things were introduced or deprecated in.  Be sure to use 2.x documentation.
+* Its mostly straightforward - soon you'll be [http://xkcd.com/353/ flying]!
+
+==Invoking python==
+Use any of 3 Methods:
+
+1) You can run with 
+  MULTI> python -f ''python_script.py'' [args...]
+
+The ''python_script.py'' will need to be in your current working directory (MULTI> pwd).
+
+2) You can also run from a Command Prompt  with 
+  C:\> c:\ghs\multi_61\mpythonrun -f ''python_script.py'' [-args args..]
+
+3) The python pane (Py) is available for development/inspection - you can copy/paste in there.  If defining a new function, control-enter quits the input entry.
+
+==Run commands==
+If you already have a familarity with the commmands available at the MULTI> prompt, the python implementation is a good way to drive this.  Some obvious benefits are adding in conditional logic, and easy-to-use string manipulation, both of which are challenging from a .rc file.  
+
+The basic command you'll want to use is:
+
+<code lang="python"> self_dbw.RunCommands(cmds, printOutput=False)</code>
+
+where:
+;self_dbw
+: this could be any debugger window instance, but the predefined 'self_dbw' is generally fine.  Note that there needs to be a functioning GUI for any debugger window class to work - the python integration isn't useful for a machine without a display.
+; RunCmds
+: the method to run MULTI commands; aliases for this are RunCommand(), RunCmd(), RunCmds()
+;cmds
+: string containing commands to run through the MULTI interpreter, as if you were running at the prompt
+; printOutput=False
+: a named parameter to say if you want the output echoed to the MULTI> pane or not; can be useful to leave it True for debug, but noisy for a final script
+
+After you've run this, you can get 2 good pieces of information out of it:
+;self_dbw.cmdExecStatus
+: Success(1) or Failure(0)
+;self_dbw.cmdExecOutput
+: output of command in a python string 
+
+By default, all RunCommands() are blocking so you can sequentially execute them (note that some MULTI commands aren't blocking so this won't help for those - for instance, 'c' doesn't block but 'cb' does).
+
+An example usage would be:
+
+<code lang="python">
+self_dbw.RunCmds("p /x foo", printOutput=False)
+out = self_dbw.cmdExecOutput
+if self_dbw.cmdExecStatus == 0:
+    raise Exception('Problem running "p /x foo"') 
+# out's value will be something like 'foo = 0x100000' when found
+# so strip off the leading "foo = 0x" and convert hex string to an int   
+val =  int(out[out.find(" = 0x")+5:], 16)
+print val
+</code>
+
+This either captures the output of the variable foo on the target, removing the text "foo = " from in front of the string, or raises an exception. You can catch the exception with a try/except clause, or you can let the script fail.
+
+=== Example: getting target string ===
+
+In the following script:
+
+<code lang="python">
+MUTLI> py -s "self_dbw.RunCmds('target set target', printOutput=False); tgt = self_dbw.cmdExecOutput[self_dbw.cmdExecOutput.find('=')+1:].strip(); print tgt"
+</code>
+
+the python MULTI command is used to get the output of the target setting from a probe and printing out the string, which might be something useful for report generation for instance (for conditional logic, using the built-in _TARGET is a better idea).
+
+==Dealing with modal dialogs==
+Some MULTI commands throw up modal dialogs upon failure, which is annoying from a scripting standpoint.  For example, if a 'MULTI> connect' command fails, a modal dialog must be dismissed before anything else can happen, which would traditionally require some human input.
+
+To deal with this, you can use the RegisterModalDialog* family of commands to tell MULTI to do something with a modal dialog when/if it appears.  For example:
+<code lang="python">    
+def do_connect(dbw, connstr):
+    dbw.RegisterModalDialogToClickButton('OK')
+    dbw.RunCmds('connect %s' % connstr, printOutput=False)
+    if (dbw.IsConnected()):
+            dbw.RemoveRegisteredModalDialogCommands(1, printOutput=False)
+            return True
+    else:
+            return False
+
+if __name__ == "__main__":
+    if (do_connect(self_dbw, "mpserv myprobe")):
+        print "Connected!"
+    else:
+        print "Error: Couldn't connect!"
+</code>
+
+''do_connect'' will try to connect; if an error modal dialog appears, we'll click OK and return False when not connected; otherwiese we'll return True.
+
+{{NOTE|Windows built-in dialogs, such as File save or Directory selection dialogs, cannot be manipulated with RegisterModalDialog* commands.  This is a limitation in the technology - you'll need to avoid actions that can cause these to appear.}}
+
+== Collecting output from MULTI windows ==
+
+MULTI's windows contain a lot of information that you might want to make use of in your script.  To do this, we need to "scrape" the content of a window so that our python script can get at it.  As background, you should know that a Window is composed of multiple Widgets - such as buttons, scroll lists, or the like.  Each widget has a name that you can refer to it by, a type, and some content (which is usually what we're after).
+
+Getting the text in a given Widget is pretty simple - a DumpWidget (or other widget-specific Dump command) exists for a Window that can output text from a Widget.  The main challenge is finding out:
+# How to get the Window of interest
+# What is the Widget we care about named?
+
+=== Getting the window ===
+
+You can get a window's name by doing:
+<code lang="python">window = winreg.ChooseWin()
+#select window from Dialog with mouse
+print window.windowName</code>
+
+but this isn't really sufficient in a real script - you'll often want to know that its the window you just created, and not one that happened to be hanging around.  To address this, a construct like the following can be used:
+
+<code lang="python">previous_windows = winreg.GetWindowList()
+#Do action here
+dialog = winreg.WaitForWindow(previous_windows, winName="WindowName")
+</code>
+This waits for a new window with the name "WindowName" to appear.
+
+=== Getting the widget ===
+
+Now that we have the window, we can get a list of what all widgets appear in it.
+
+<code lang="python">dialog.ShowWidgets()</code>
+
+will show the widgets in the dialog.  Output in the Py pane, looking at a Data Explorer may look like:
+
+<code>
+
+Py Out: menubar:     MenuBar
+Py Out: bsToggleToolbar:     ButtonSet (invisible)
+Py Out:     down:     Button (invisible)
+Py Out: toolbar:     ButtonSet
+Py Out:     Undo:     Button (dimmed)
+Py Out:     Redo:     Button (dimmed)
+Py Out:     -:     Button (dimmed)
+Py Out:     Add Variable:     Button
+Py Out:     Remove Selected Item from Window:     Button
+Py Out:     -:     Button (dimmed)
+Py Out:     Freeze Selected Item:     Button
+Py Out:     Dereference Pointer:     Button (dimmed)
+Py Out: l_toolbarSizer:     Line (invisible)
+Py Out: l_onepixel:     Line (invisible)
+Py Out: msl_view:     MScrollList
+Py Out: ch_view:     ColumnHeader
+Py Out: pd_editWhich:     PullDown
+Py Out: tf_editValue:     TextField
+Py Out: tf_lowerBound:     TextField (invisible)
+Py Out: tf_upperBound:     TextField (invisible)
+Py Out: l_mslMarginLeft:     Line (invisible)
+Py Out: l_mslMarginRight:     Line (invisible)
+Py Out: tm_pane:     TabControl (invisible)
+Py Out: master_splitter:     Splitter (invisible)
+Py Out: graph_canvas:     BlankCanvas
+Py Out: tv_stats:     TextView (invisible)
+Py Out: msl_table:     MScrollList (invisible)
+Py Out: ch_table:     ColumnHeader (invisible)
+Py Out: vsb_table:     WScrollBar (invisible)
+Py Out: tm_pane_spare:     Line
+Py Out: msl_view_spare:     Line
+Py Out: l_windowTop:     Line (invisible)
+Py Out: l_chReplacement:     Line (invisible)
+Py Out: l_viewPaneSizer:     Line (invisible)
+Py Out: l_tmPaneSizer:     Line (invisible)
+Py Out: sb_Status:     Status (invisible)
+Py Out: True
+</code>
+
+You can then run:
+
+<code lang="python">dialog.DumpWidget("widgetName")</code>
+
+on widgets that look promising for your purposes to see if that's what you're looking for.  
+
+For example:
+<code>
+Python> window.DumpWidget("msl_view")
+CmdOut: Executing Python statements ... 
+Py Out: MSL: msl_view
+Py Out: myvar    1000    
+Py Out: True
+CmdOut: Done.
+</code>
+
+Some widgets have their own Dump commands for better output, such as DumpMsl for a scroll list.  Some widgets don't have any way to dump contents currently - this is especially true for "container" type widgets, such as ButtonSet, or pure GUI widgets such as a Line or WScrollBar.
+
+Putting this all together, you might find the following useful:
+
+<code lang="python">
+def DumpVisibleWidgets(dlg):
+    """ Dump all visible widgets which support output dumping """
+
+    # These widgets don't DumpWidget successfully; exclude them from output
+    # Note: This probably is not complete.  If you see that something is not
+    # "not currently supported", add its type here.
+    unsupported_widgets = ['Line', 'BlankCanvas', 'ButtonSet', 'MenuBar', 
+                           'Rectangle', 'Splitter', 'FullRectangle', 
+                           'TabButtons']
+
+    dlg.ShowWidgets(printOutput=False)
+    out = dlg.cmdExecOutput
+    for i in out.splitlines():
+        if i.find("(invisible)") == -1:
+            # get widget type
+            widgetType = None
+            first = i.find(":")+1
+            last = i.find("(", first)
+            if last == -1:
+                widgetType = i[first:].strip()                
+            else:
+                widgetType = i[first:last].strip()
+
+            if widgetType in unsupported_widgets:
+                continue
+
+
+            dlg.DumpWidget(i[0:i.find(":")].strip(), printOutput=False)
+           
+            print "----------------------------------"
+            print ""
+            print "Name: " + i[0:first-1].strip()
+            print "Type: " + widgetType.strip()
+            print "Dump: " + dlg.cmdExecOutput
+            print ""
+</code>
+This prints output for only those widgets that support dumping, along with their name and type. 
+
+Assuming you've saved this in your python path as dvw.py, this can be used via the Py pane by:
+<pre> 
+Python> from dvw import DumpVisibleWidgets 
+Python> DumpVisibleWidgets(winreg.GetWindow("Register View")) 
+</pre>
+
+Output will look like:
+<code>
+
+
+...
+Py Out: 
+Py Out: Name: Print
+Py Out: Type: Button
+Py Out: Dump: Button: Print 
+Py Out: 
+Py Out: ----------------------------------
+Py Out: 
+Py Out: Name: tab
+Py Out: Type: TabControl
+Py Out: Dump: Tab name: Processor
+Py Out: 
+Py Out: ----------------------------------
+Py Out: 
+Py Out: Name: msl_data
+Py Out: Type: MScrollList
+Py Out: Dump: MSL: msl_data
+Py Out: -General        
+Py Out: >PC    0x00001104    
+Py Out: >SP    0x00183d70    
+Py Out: >R0    0x00003268    
+Py Out: >R2    0x0000b818    
+...
+</code>
+
+=== Making use of the output ===
+
+After you know the widget you're looking for, making use of it is simply:
+
+<code lang="python">
+dialog.DumpWidget("widgetname", printOutput=False)
+if dialog.cmdExecStatus == 0:
+  raise Exception('problem Dumping widget "widgetname"')
+output = dialog.cmdExecOutput
+# parse the output string or do other processing 
+</code>
+
+As mentioned earlier, using a widget-specific dump may get you more usable information than DumpWidget.  Output is always in a string format, so you'll need to do any necessary conversions yourself.
+
+=== Example ===
+
+This example implements a grep function which scrapes the output from a MULTI grep window.
+<code lang="python">
+def grep(dbw, grepstr):
+	"""Perform a grep, wait for results, and return results in a single multi-line string""" 
+	
+	previous_windows = winreg.GetWindowList()
+	
+	#run commands and get handle to window
+   	dbw.RunCmds("grep %s" % grepstr)
+   	dl = winreg.WaitForWindow(previous_windows, winName="Search in Files Result")
+  	
+ 	# wait for the GStatus to be "Search Completed" 
+ 	dl.DumpWidget("sbSearching", printOutput=False)
+ 	while dl.cmdExecOutput != "Content of widget sbSearching:\nSearch completed.": 
+  		time.sleep(0.5)
+ 		dl.DumpWidget("sbSearching", printOutput=False)
+   
+ 	# Get output of search results   
+ 	dl.DumpMsl("slGrepResults", printOutput=False)
+ 	grep_results = dl.cmdExecOutput
+   	
+   	#close the dialog
+ 	dl.ClickButton("Close")
+	   	
+ 	return grep_results
+
+if __name__ == "__main__:
+  grep(self_dbw, "foo")
+</code>
+
+The careful reader may have noticed that it uses a 'dl.ClickButton' as well - while I didn't specifically introduce this, you can probably guess what this does!  You use the same method to find the button widget name to pass to this method as is described in this section.
+
+== Other topics (TBD) ==
+=== Any other requests? ===
+
+== Great, but this doesn't answer my question ==
+
+{{WARNING|mailing lists are internal-only, do not give to customers}}
+Please ask on [mailto:multi-support@ghs.com the MULTI-Support list] - if we don't know the answer we'll figure it out.

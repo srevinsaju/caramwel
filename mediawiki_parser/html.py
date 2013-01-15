@@ -252,6 +252,9 @@ def toolset(allowed_tags, allowed_autoclose_tags, allowed_attributes, interwiki,
     def render_code_open(node):
         node.value = node.snippet
 
+    def render_code_text(node):
+        node.value = content(node).replace('<', '&lt;').replace('>', '&gt;') 
+
     def render_hr(node):
         node.value = '<hr />\n'
 

@@ -11,7 +11,7 @@ class PreformattedParagraphsTests(ParserTestCase):
       preformatted_line:
          preformatted_inline:
             raw_text:This is a preformatted paragraph.
-         LF:
+         EOL_KEEP:
 """
         self.parsed_equal_tree(source, result, None)
 
@@ -24,7 +24,7 @@ Followed by a "normal" one.
       preformatted_line:
          preformatted_inline:
             raw_text:This is a preformatted paragraph.
-         LF:
+         EOL_KEEP:
 
    paragraphs:
       paragraph:
@@ -45,17 +45,17 @@ Followed by a "normal" one.
       preformatted_line:
          preformatted_inline:
             raw_text:Followed by
-         LF:
+         EOL_KEEP:
 
       preformatted_line:
          preformatted_inline:
             raw_text:a few preformatted
-         LF:
+         EOL_KEEP:
 
       preformatted_line:
          preformatted_inline:
             raw_text:lines
-         LF:
+         EOL_KEEP:
 """
         self.parsed_equal_tree(source, result, None)
 
@@ -68,12 +68,12 @@ Followed by a "normal" one.
       preformatted_line:
          preformatted_inline:
             raw_text:This is a multiline
-         LF:
+         EOL_KEEP:
 
       preformatted_line:
          preformatted_inline:
             raw_text:preformatted paragraph.
-         LF:
+         EOL_KEEP:
 """
         self.parsed_equal_tree(source, result, None)
 
@@ -88,7 +88,7 @@ Followed by a "normal" one.
             internal_link:
                page_name:Template:templates
             raw_text: also work.
-         LF:
+         EOL_KEEP:
 """
         self.parsed_equal_tree(source, result, None)
 
@@ -104,20 +104,20 @@ Followed by a "normal" one.
             raw_text:Preformatted
             tab_to_8_spaces: 
             raw_text:paragraph
-         LF:
+         EOL_KEEP:
 
       preformatted_line:
          preformatted_inline:
             tab_to_8_spaces: 
             raw_text:with
-         LF:
+         EOL_KEEP:
 
       preformatted_line:
          preformatted_inline:
             tab_to_8_spaces: 
             tab_to_8_spaces: 
             raw_text:multiple tabs.
-         LF:
+         EOL_KEEP:
 """
         self.parsed_equal_tree(source, result, None)
 
