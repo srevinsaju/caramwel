@@ -20,49 +20,50 @@ def inputNewer(inputFile, outputFile):
     else:
         return False
 
-def makeparsers():
+def makeparsers(force=False):
     from pijnu import makeParser
     import os
     inputFile = "preprocessor.pijnu"
     outputFile = os.path.join("mediawiki_parser", "preprocessorParser.py")
-    if inputNewer(inputFile, outputFile):
+    if force or inputNewer(inputFile, outputFile):
         preprocessorGrammar = file(inputFile).read()
         makeParser(preprocessorGrammar, outputPath="mediawiki_parser")
 
     inputFile = "mediawiki.pijnu"
     outputFile = os.path.join("mediawiki_parser", "wikitextParser.py")
-    if inputNewer(inputFile, outputFile):
+    if force or inputNewer(inputFile, outputFile):
         mediawikiGrammar = file(inputFile).read()
         makeParser(mediawikiGrammar, outputPath="mediawiki_parser")
 
 class build_parsers(Command):
     description = "Build the pijnu parsers for mediawiki_parser"
-    user_options = []
+    user_options = [('force', 'f', "Force parser generation")]
     def initialize_options(self):
-        pass
+        self.force = None
     def finalize_options(self):
         pass
 
     def run(self):
         # honor the --dry-run flag
         if not self.dry_run:
-            makeparsers()
+            makeparsers(self.force)
 
 class build(_build):
     sub_commands = [ ('build_parsers', None) ] + _build.sub_commands 
 
 
-setup(
-    name="mediawiki-parser",
-    author="erikrose",
-    version="0.3.00",
-    description=("",),
-    long_description=read('README.rst'),
-    packages=[
-        "mediawiki_parser"
-        ],
-    scripts=[],
-    data_files=[],
-    install_requires=[ ],
-    cmdclass={'build_parsers': build_parsers, 'build': build}
-)
+if __name__ == '__main__':
+    setup(
+        name="mediawiki-parser",
+        author="erikrose",
+        version="0.3.00",
+        description=("",),
+        long_description=read('README.rst'),
+        packages=[
+            "mediawiki_parser"
+            ],
+        scripts=[],
+        data_files=[],
+        install_requires=[ ],
+        cmdclass={'build_parsers': build_parsers, 'build': build}
+    )
