@@ -4,3 +4,5 @@ build
 mediawiki_parser/preprocessorParser.py
 
 mediawiki_parser/wikitextParser.py
+
+performance_test/results
