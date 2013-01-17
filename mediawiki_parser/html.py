@@ -4,7 +4,12 @@ from pijnu.library.node import Nil, Nodes, Node
 from mediawiki_parser import wikitextParser
 import apostrophes
 
-def toolset(allowed_tags, allowed_autoclose_tags, allowed_attributes, interwiki, namespaces):
+try: 
+    import pygments
+except ImportError:
+    pygments = None
+
+def toolset(allowed_tags, allowed_autoclose_tags, allowed_attributes, interwiki, namespaces, use_pygments=False):
     tags_stack = []
 
     external_autonumber = []
@@ -17,6 +22,11 @@ def toolset(allowed_tags, allowed_autoclose_tags, allowed_attributes, interwiki,
     """ This will contain the links to the categories of the article. """
     interwiki_links = []
     """ This will contain the links to the foreign versions of the article. """
+
+    if use_pygments and not pygments:
+        raise RuntimeError("use_pygment=True, but pygment could not be imported")
+
+    pygment_options = {'lang': "text"}
 
     for namespace, value in namespaces.iteritems():
         assert value in range(16), "Incorrect value for namespaces"
@@ -244,16 +254,42 @@ def toolset(allowed_tags, allowed_autoclose_tags, allowed_attributes, interwiki,
         node.value = '</tr>\n<tr%s>\n' % line_parameters
 
     def render_preformatted(node):
-        node.value = '<pre>' + content(node) +  '</pre>\n'
+        node.value = u'<pre>' + content(node) +  u'</pre>\n'
 
-    def render_code(node):
-        node.value = content(node) + '</code>\n'
+    def render_source(node):
+        if use_pygments:
+            from pygments import highlight
+            from pygments.lexers import get_lexer_by_name
+            from pygments.formatters import HtmlFormatter
+            source = content(node)
+            source_lang = pygment_options["lang"]
+            rendered = highlight(source, get_lexer_by_name(source_lang, stripall=True), HtmlFormatter(linenos=True))
+            node.value =rendered
+            pygment_options['lang'] = "text"
+            return
+        else:
+            node.value = content(node) + u'</code></pre>\n'
 
-    def render_code_open(node):
-        node.value = node.snippet
+    def render_source_open(node):
+        if use_pygments:
+            if node.kind == node.BRANCH:
+                source_lang = ([n.value for n in node[0] if n.tag == "SOURCE_LANG_NAME"] or [""])[0]
+            else:
+                source_lang = "text"
+            pygment_options['lang'] = source_lang
+            node.value = ""
+        else:
+            if node.value != node.NIL:
+                attribs = " %s"%(node.leaves(),)
+            else: 
+                attribs = ""
+            node.value = u"<pre><code%s>"%attribs
 
-    def render_code_text(node):
-        node.value = content(node).replace('<', '&lt;').replace('>', '&gt;') 
+    def render_source_text(node):
+        if not use_pygments:
+            node.value = content(node).replace('<', '&lt;').replace('>', '&gt;') 
+        else:
+            node.value = content(node)
 
     def render_hr(node):
         node.value = '<hr />\n'
@@ -458,7 +494,7 @@ def toolset(allowed_tags, allowed_autoclose_tags, allowed_attributes, interwiki,
 
     return locals()
 
-def make_parser(allowed_tags=[], allowed_autoclose_tags=[], allowed_attributes=[], interwiki={}, namespaces={}):
+def make_parser(allowed_tags=[], allowed_autoclose_tags=[], allowed_attributes=[], interwiki={}, namespaces={}, use_pygments=False):
     """Constructs the parser for the HTML backend.
     
     :arg allowed_tags: List of the HTML tags that should be allowed in the parsed wikitext.
@@ -474,5 +510,5 @@ def make_parser(allowed_tags=[], allowed_autoclose_tags=[], allowed_attributes=[
             including the localized version of those strings (Modele, Categorie, etc.),
             associated to the corresponding namespace code.
     """
-    tools = toolset(allowed_tags, allowed_autoclose_tags, allowed_attributes, interwiki, namespaces)
+    tools = toolset(allowed_tags, allowed_autoclose_tags, allowed_attributes, interwiki, namespaces, use_pygments)
     return wikitextParser.make_parser(tools)

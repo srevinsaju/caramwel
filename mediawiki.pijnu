@@ -70,13 +70,16 @@ def replace_by_8_spaces(node):
     NOWIKI_END              : "</nowiki>"                                                           : drop
     PRE_BEGIN               : "<pre>"                                                               : drop
     PRE_END                 : "</pre>"                                                              : drop
-    CODE_TAG_START          : "<code"                                                               : drop
-    CODE_TAG_GT             : GT                                                                    : drop
-    CODE_TAG_ATTRIBUTE      : ( SPACETABEOL* "lang=" QUOTE [a..zA..Z0..9]+ QUOTE )
-    CODE_BEGIN              : CODE_TAG_START CODE_TAG_ATTRIBUTE? SPACETABEOL* CODE_TAG_GT           : render_code_open
-    CODE_END                : "</code>"                                                             : drop
+    QUOTE_KEEP              : QUOTE                                                                 : restore
+    SOURCE_TAG_START        : "<source"                                                             : drop
+    SOURCE_TAG_GT           : GT                                                                    : drop
+    SOURCE_LANG_NAME        : [a..zA..Z0..9]+
+    SOURCE_TAG_LANG         : "lang=" QUOTE_KEEP? SOURCE_LANG_NAME QUOTE_KEEP? 
+    SOURCE_TAG_ATTRIBUTE    : ( SPACETABEOL* SOURCE_TAG_LANG )                                      : liftNode
+    SOURCE_BEGIN            : SOURCE_TAG_START SOURCE_TAG_ATTRIBUTE? SPACETABEOL* SOURCE_TAG_GT (SPACETAB* EOL)? : render_source_open
+    SOURCE_END              : "</source>"                                                           : drop
     HR                      : ("<hr />" / "<hr>" / "<hr/>" / "</hr>") SPACE*                        : render_hr
-    SPECIAL_TAG             : NOWIKI_BEGIN/NOWIKI_END/PRE_BEGIN/PRE_END/CODE_BEGIN/CODE_END/HR
+    SPECIAL_TAG             : NOWIKI_BEGIN/NOWIKI_END/PRE_BEGIN/PRE_END/SOURCE_BEGIN/SOURCE_END/HR
 
 # Characters
 
@@ -138,7 +141,7 @@ def replace_by_8_spaces(node):
     external_link           : L_BRACKET url optional_link_text? R_BRACKET                           : render_external_link
     link                    : internal_link / external_link
 
-# Pre, code, and nowiki tags
+# Pre, source, and nowiki tags
 
     EOL_KEEP                : EOL                                                                   : restore
     TAB_KEEP                : TAB                                                                   : restore
@@ -150,17 +153,17 @@ def replace_by_8_spaces(node):
     eol_to_space            : EOL*                                                                  : replace_by_space
     nowiki_text             : (!NOWIKI_END (any_char/eol_to_space))*                                : join
     nowiki                  : NOWIKI_BEGIN nowiki_text NOWIKI_END                                   : liftValue
-    code_text               : (!CODE_END ([\x20..\xff] / TAB_KEEP /EOL_KEEP))*                           : join render_code_text
-    code                    : CODE_BEGIN code_text CODE_END SPACE*                                  : liftValue render_code
+    sourcetext              : (!SOURCE_END ([\x20..\xff] / TAB_KEEP /EOL_KEEP))*                    : join render_source_text
+    source                  : SOURCE_BEGIN sourcetext SOURCE_END SPACE*                             : liftValue render_source
 
 # Text types
 
-    inline_end              : code / preformatted / HR
+    inline_end              : source / preformatted / HR
     styled_text             : link / inline_url / html_comment / tag / entity
     allowed_char            : ESC_CHAR{1}                                                           : restore liftValue
     allowed_text            : !inline_end (raw_text / LT / GT / tab_to_space / allowed_char)        : liftNode
-    clean_inline            : (nowiki / code / styled_text / raw_text)+                                    : @
-    inline                  : (nowiki / code / styled_text / allowed_text)+                                : @
+    clean_inline            : (nowiki / source / styled_text / raw_text)+                           : @
+    inline                  : (nowiki / source / styled_text / allowed_text)+                       : @
 
 # Paragraphs
 
@@ -207,7 +210,7 @@ def replace_by_8_spaces(node):
 
     tab_to_8_spaces         : TAB                                                                   : replace_by_8_spaces
     any_char_but_tab        : raw_text / LT / GT / (!TAB ESC_CHAR)                                  : join
-    preformatted_inline     : (tab_to_8_spaces / code / nowiki / styled_text / any_char_but_tab)+
+    preformatted_inline     : (tab_to_8_spaces / source / nowiki / styled_text / any_char_but_tab)+
     preformatted_line       : SPACE preformatted_inline EOL_KEEP                                    : liftValue
     preformatted_lines      : preformatted_line+                                                    : render_preformatted
 
@@ -227,7 +230,7 @@ def replace_by_8_spaces(node):
     table_wikitext          : list/horizontal_rule/preformatted_lines/title/table_structure
     table_inline            : !(PIPE/BANG) clean_inline EOL?                                        : liftValue
     table_paragraph         : (!(PIPE/BANG/TABLE_NEWLINE/TABLE_TITLE/TABLE_END) paragraph_line)     : render_paragraph
-    table_multiline_content : (table_paragraph / code / preformatted / table_wikitext / EOL)*
+    table_multiline_content : (table_paragraph / source / preformatted / table_wikitext / EOL)*
     table_cell_content      : table_inline? table_multiline_content                                 : liftValue
     table_cell              : table_parameter table_cell_content
     table_other_cell        : (PIPE{2} table_cell)*                                                 : liftValue liftNode
@@ -246,6 +249,6 @@ def replace_by_8_spaces(node):
 
 # Top pattern
 
-    valid_syntax            : list/horizontal_rule/preformatted_lines/title/table/code/preformatted/HR/EOL/paragraphs
+    valid_syntax            : list/horizontal_rule/preformatted_lines/title/table/source/preformatted/HR/EOL/paragraphs
     wikitext                : optional_comment (valid_syntax/invalid_line)+                         : liftValue render_wikitext
     body                    : wikitext{1}                                                           : liftValue render_body

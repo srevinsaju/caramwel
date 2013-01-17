@@ -254,14 +254,14 @@ test
         self.parsed_equal_string(source, result, 'wikitext', {}, 'html')
 
     def test_code_paragraph(self):
-        source = """<code> test
+        source = """<source> test
  {{template}}
- test</code>
+ test</source>
 """
         templates = {'template': 'content'}
-        result = """<code> test
+        result = """<pre><code> test
  {{template}}
- test</code>
+ test</code></pre>
 """
         self.parsed_equal_string(source, result, 'wikitext', {}, 'html')
 

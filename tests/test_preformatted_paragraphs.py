@@ -132,15 +132,15 @@ Preformatted paragraph.
 """
         self.parsed_equal_tree(source, result, None)
 
-    def test_html_multiline_code_paragraph(self):
-        source = """<code>
+    def test_html_multiline_source_paragraph(self):
+        source = """<source>
 
 This is a multiline...
 
 
 ...code paragraph.
 
-</code>
+</source>
 """
         result = """body:
    preformatted:
@@ -175,8 +175,8 @@ This is a multiline...
 
     def test_formatted_html_code_paragraph(self):
         # <code> should act similar to <nowiki>
-        source = "<code>some [[text]] that should {{not}} be changed</code>\n"
-        result = "[code:'some [[text]] that should {{not}} be changed']"
+        source = "<source>some [[text]] that should {{not}} be changed</source>\n"
+        result = "[source:'some [[text]] that should {{not}} be changed']"
         self.parsed_equal_string(source, result, None)
 
     def test_formatted_html_pre_paragraph(self):

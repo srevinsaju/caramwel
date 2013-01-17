@@ -78,13 +78,13 @@ def toolset():
     def render_preformatted(node):
         pass
 
-    def render_code(node):
+    def render_source(node):
         pass
 
-    def render_code_open(node):
+    def render_source_open(node):
         pass
 
-    def render_code_text(node):
+    def render_source_text(node):
         pass
 
     def render_hr(node):
