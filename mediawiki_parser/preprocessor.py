@@ -43,7 +43,7 @@ def substitute_template(node):
     else:
         parsed_templates[node_to_str] = None
         if len(node.value) > 0:
-            page_name = node.value[0].value
+            page_name = node.value[0].value.strip()
             count = 0
             parameters = {}
             if len(node.value) > 1:

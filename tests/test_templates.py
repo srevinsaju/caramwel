@@ -10,6 +10,24 @@ class TemplatesTests(PreprocessorTestCase):
         templates = {'Template': 'template content'}
         self.parsed_equal_string(source, result, templates)
 
+    def test_existent_template_without_parameter_trailing_space(self):
+        source = "a {{Template }}"
+        result = "a template content"
+        templates = {'Template': 'template content'}
+        self.parsed_equal_string(source, result, templates)
+
+    def test_existent_template_without_parameter_trailing_newline(self):
+        source = "a {{Template\n}}"
+        result = "a template content"
+        templates = {'Template': 'template content'}
+        self.parsed_equal_string(source, result, templates)
+
+    def test_existent_template_without_parameter_leading_trailing_space(self):
+        source = "a {{ Template }}"
+        result = "a template content"
+        templates = {'Template': 'template content'}
+        self.parsed_equal_string(source, result, templates)
+
     def test_nonexistant_template_without_parameter(self):
         source = "a {{test}}"
         result = "a [[Template:test]]"
@@ -50,6 +68,12 @@ class TemplatesTests(PreprocessorTestCase):
 
     def test_template_with_parameters(self):
         source = "{{Template with|1=parameter| 2 = parameters}}"
+        result = "test parameter parameters"
+        templates = {'Template with': 'test {{{1}}} {{{2}}}'}
+        self.parsed_equal_string(source, result, templates)
+
+    def test_template_with_parameters_trailing_whitespace(self):
+        source = "{{Template with \n |1=parameter| 2 = parameters}}"
         result = "test parameter parameters"
         templates = {'Template with': 'test {{{1}}} {{{2}}}'}
         self.parsed_equal_string(source, result, templates)
