@@ -12,9 +12,9 @@ def replace_by_8_spaces(node):
 <definition>
 # Codes
 
-    LF                      : '\x0a'
-    CR                      : '\x0d'
-    CRLF                    : "\x0d\x0a"
+    LF                      : '\x0a'                                                                : drop
+    CR                      : '\x0d'                                                                : drop
+    CRLF                    : "\x0d\x0a"                                                            : drop
     EOL                     : CRLF / LF / CR                                                        : drop
     L_BRACKET               : "["                                                                   : drop
     R_BRACKET               : "\]"                                                                  : drop
@@ -64,6 +64,11 @@ def replace_by_8_spaces(node):
     FTP                     : "ftp://"                                                              : liftValue
     protocol                : HTTPS / HTTP / FTP                                                    : liftValue
 
+    HTTPS_DROP              : "https://"                                                            : drop
+    HTTP_DROP               : "http://"                                                             : drop
+    FTP_DROP                : "ftp://"                                                              : drop
+    protocol_DROP           : HTTPS / HTTP / FTP                                                    : drop
+
 # Predefined HTML tags
 
     NOWIKI_BEGIN            : "<nowiki>"                                                            : drop
@@ -78,13 +83,16 @@ def replace_by_8_spaces(node):
     SOURCE_TAG_ATTRIBUTE    : ( SPACETABEOL* SOURCE_TAG_LANG )                                      : liftNode
     SOURCE_BEGIN            : SOURCE_TAG_START SOURCE_TAG_ATTRIBUTE? SPACETABEOL* SOURCE_TAG_GT (SPACETAB* EOL)? : render_source_open
     SOURCE_END              : "</source>"                                                           : drop
+    HR_OPTIONS              : ("<hr />" / "<hr>" / "<hr/>" / "</hr>")                               : drop
     HR                      : ("<hr />" / "<hr>" / "<hr/>" / "</hr>") SPACE*                        : render_hr
-    SPECIAL_TAG             : NOWIKI_BEGIN/NOWIKI_END/PRE_BEGIN/PRE_END/SOURCE_BEGIN/SOURCE_END/HR
+    _SPECIAL_TAG            : NOWIKI_BEGIN/NOWIKI_END/PRE_BEGIN/PRE_END
+    SPECIAL_TAG             : _SPECIAL_TAG/SOURCE_BEGIN/SOURCE_END/HR
 
 # Characters
 
 
-    ESC_CHAR                : L_BRACKET/R_BRACKET/protocol/PIPE/L_BRACE/R_BRACE/LT/GT/SLASH/AMP/SEMICOLON/TAB
+    _ESC_CHAR               : L_BRACKET/R_BRACKET/PIPE/L_BRACE/R_BRACE/SLASH/AMP/SEMICOLON/TAB/protocol_DROP
+    ESC_CHAR                : _ESC_CHAR/LT/GT
     TITLE_END               : TITLE6_END/TITLE5_END/TITLE4_END/TITLE3_END/TITLE2_END/TITLE1_END
     ESC_SEQ                 : SPECIAL_TAG / ESC_CHAR / TITLE_END
     tab_to_space            : TAB+                                                                  : replace_by_space

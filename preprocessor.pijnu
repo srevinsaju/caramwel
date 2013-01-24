@@ -14,6 +14,8 @@ def replace_by_space(node):
     QUOTE                   : "\""
     L_BRACKET               : "["
     R_BRACKET               : "\]"
+    L_BRACKET_DROP          : "["                                                                   : drop
+    R_BRACKET_DROP          : "\]"                                                                  : drop
     L_BRACE                 : "{"                                                                   : drop
     R_BRACE                 : "}"                                                                   : drop
     SPACE                   : " "                                                                   : drop
@@ -49,7 +51,8 @@ def replace_by_space(node):
 
     any_char                : [\x20..\xff] / '/'
     esc_char                : L_BRACKET/R_BRACKET/PIPE/L_BRACE/R_BRACE/LT/GT/AMP/SEMICOLON
-    raw_char                : !esc_char any_char
+    esc_char_drop           : L_BRACKET_DROP/R_BRACKET_DROP/PIPE/L_BRACE/R_BRACE/LT/GT/AMP/SEMICOLON
+    raw_char                : !esc_char_drop any_char
     raw_text                : (raw_char / TAB)+                                                     : join
 
 # HTML comments
@@ -86,7 +89,7 @@ def replace_by_space(node):
     parameter_value         : value_content SPACETABEOL*
     optional_value          : parameter_value?
     parameter_equal         : SPACETABEOL* EQUAL SPACETABEOL*
-    parameter_name          : (!(esc_char/parameter_equal) raw_char)+                               : join
+    parameter_name          : (!(esc_char_drop/parameter_equal) raw_char)+                               : join
     named_parameter         : parameter_name parameter_equal optional_value
     standalone_parameter    : value_content?                                                        : join
     parameter               : SPACETABEOL* PIPE SPACETABEOL* (named_parameter/standalone_parameter) : liftValue
@@ -117,6 +120,6 @@ def replace_by_space(node):
 
     styled_text             : template / template_parameter / entity
     not_styled_text         : html_comment / preformatted / nowiki / source
-    allowed_char            : esc_char{1}                                                           : restore liftValue
+    allowed_char            : esc_char_drop{1}                                                           : restore liftValue
     allowed_text            : raw_text / allowed_char
     wikitext                : (not_styled_text / styled_text / allowed_text / EOL)+                 : join
