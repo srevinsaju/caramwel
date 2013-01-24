@@ -1,4 +1,5 @@
 from mediawiki_parser import preprocessor, html, raw
+from pijnu.library.pattern import Pattern
 import cProfile, pstats
 
 foo = ""
@@ -21,6 +22,7 @@ def testit(content):
 
     preprocessed_text = preprocess.parseTest(content)
     #import pdb; pdb.set_trace()
+    #Pattern.TRACE=True
     foo = parser.parseTest(preprocessed_text).leaves()
     #return preprocessed_text.treeView()
 
