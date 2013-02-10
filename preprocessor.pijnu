@@ -43,7 +43,7 @@ def replace_by_space(node):
     PRE_END                 : "</pre>"
     SOURCE_TAG_START          : "<source"
     SOURCE_TAG_GT             : GT
-    SOURCE_TAG_ATTRIBUTE      : ( SPACETABEOL* "lang=" QUOTE [a..zA..Z0..9]+ QUOTE )
+    SOURCE_TAG_ATTRIBUTE      : ( SPACETABEOL* "lang=" QUOTE [a..zA..Z0..9 ]+ QUOTE )
     SOURCE_BEGIN              : SOURCE_TAG_START SOURCE_TAG_ATTRIBUTE? SPACETABEOL* SOURCE_TAG_GT
     SOURCE_END                : "</source>"
 

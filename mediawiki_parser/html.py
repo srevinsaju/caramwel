@@ -263,7 +263,8 @@ def toolset(allowed_tags, allowed_autoclose_tags, allowed_attributes, interwiki,
             from pygments.formatters import HtmlFormatter
             source = content(node)
             source_lang = pygment_options["lang"]
-            rendered = highlight(source, get_lexer_by_name(source_lang, stripall=True), HtmlFormatter(linenos=True))
+            linenos = pygment_options['linenos']
+            rendered = highlight(source, get_lexer_by_name(source_lang, stripnl=False, stripall=False, tabsize=8), HtmlFormatter(linenos=linenos))
             node.value =rendered
             pygment_options['lang'] = "text"
             return
@@ -273,10 +274,14 @@ def toolset(allowed_tags, allowed_autoclose_tags, allowed_attributes, interwiki,
     def render_source_open(node):
         if use_pygments:
             if node.kind == node.BRANCH:
-                source_lang = ([n.value for n in node[0] if n.tag == "SOURCE_LANG_NAME"] or [""])[0]
+                source_lang = ([n.value for n in node[0] if getattr(n, 'tag', None) == "SOURCE_LANG_NAME"] or ["text"])[0]
+                source_lang, source_linenos = (source_lang.split(" ") + [""])[0:2]
+                source_linenos = source_linenos != "nonumber"
             else:
                 source_lang = "text"
+                source_linenos = True
             pygment_options['lang'] = source_lang
+            pygment_options['linenos'] = source_linenos
             node.value = ""
         else:
             if node.value != node.NIL:

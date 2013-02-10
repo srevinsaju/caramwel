@@ -265,6 +265,20 @@ test
 """
         self.parsed_equal_string(source, result, 'wikitext', {}, 'html')
 
+    def test_code_lang_paragraph(self):
+        source = """<source lang="c nonumber">
+   test
+ {{template}}
+ test</source>
+"""
+        templates = {'template': 'content'}
+        result = """<pre><code lang="c nonumber"
+>   test
+ {{template}}
+ test</code></pre>
+"""
+        self.parsed_equal_string(source, result, 'wikitext', {}, 'html')
+
     def test_italic(self):
         source = "Here, we have ''italic'' text.\n"
         result = "<p>Here, we have <em>italic</em> text.</p>\n"

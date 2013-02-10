@@ -78,7 +78,7 @@ def replace_by_8_spaces(node):
     QUOTE_KEEP              : QUOTE                                                                 : restore
     SOURCE_TAG_START        : "<source"                                                             : drop
     SOURCE_TAG_GT           : GT                                                                    : drop
-    SOURCE_LANG_NAME        : [a..zA..Z0..9]+
+    SOURCE_LANG_NAME        : [a..zA..Z0..9 ]+
     SOURCE_TAG_LANG         : "lang=" QUOTE_KEEP? SOURCE_LANG_NAME QUOTE_KEEP? 
     SOURCE_TAG_ATTRIBUTE    : ( SPACETABEOL* SOURCE_TAG_LANG )                                      : liftNode
     SOURCE_BEGIN            : SOURCE_TAG_START SOURCE_TAG_ATTRIBUTE? SPACETABEOL* SOURCE_TAG_GT (SPACETAB* EOL)? : render_source_open
