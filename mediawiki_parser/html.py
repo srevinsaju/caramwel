@@ -471,14 +471,14 @@ def toolset(allowed_tags, allowed_autoclose_tags, allowed_attributes, interwiki,
             page_name = page_name[1:]
         if ':' in page_name:
             namespace, page_name = page_name.split(':', 1)
-            if namespace in interwiki and not force_link:
+            if namespace in interwiki.keys() and not force_link:
                 render_interwiki(namespace, page_name)
                 node.value = ''
                 return
-            elif namespace in interwiki:
+            elif namespace in interwiki.keys():
                 url = interwiki[namespace]
                 namespace = ''
-            if namespace in namespaces:
+            if namespace in namespaces.keys():
                 if namespaces[namespace] == 6 and not force_link:  # File
                     node.value = render_file(page_name, node.value)
                     return
@@ -510,8 +510,8 @@ def make_parser(allowed_tags=[], allowed_autoclose_tags=[], allowed_attributes=[
     :arg allowed_attributes: List of the HTML attributes that should be allowed in the parsed
             tags (e.g.: class="", style=""). All the other attributes (e.g.: onclick="") will
             be removed.
-    :arg interwiki: List of the allowed interwiki prefixes (en, fr, es, commons, etc.)
-    :arg namespaces: List of the namespaces of the wiki (File, Category, Template, etc.),
+    :arg interwiki: Dict of the allowed interwiki prefixes (en, fr, es, commons, etc.)
+    :arg namespaces: Dict of the namespaces of the wiki (File, Category, Template, etc.),
             including the localized version of those strings (Modele, Categorie, etc.),
             associated to the corresponding namespace code.
     """
