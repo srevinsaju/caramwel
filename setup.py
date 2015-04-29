@@ -55,8 +55,8 @@ class build(_build):
 if __name__ == '__main__':
     setup(
         name="mediawiki-parser",
-        author="erikrose",
-        version="0.3.00",
+        author="Erik Rose, Peter Potrowl",
+        version="0.3.0",
         description=("",),
         long_description=read('README.rst'),
         packages=[

@@ -3,11 +3,13 @@ Presentation
 
 This is a parser for MediaWiki's (MW) syntax. It's goal is to transform wikitext into an abstract syntax tree (AST) and then render this AST into various formats such as plain text and HTML.
 
+It is an original work by Peter Potrowl and his mentor Erik Rose achieved during the Google Summer of Code 2011.
+
 
 Requirements
 ============
 
-This parser relies on Pijnu. While the original Pijnu is available at: https://github.com/peter17/pijnu, this fork relies on changes from https://github.com/nickburlett/pijnu
+This parser relies on Pijnu. You must install the latest version of Pijnu, available at: https://github.com/peter17/pijnu
 Do not use the version from http://spir.wikidot.com, which is outdated.
 
 
@@ -29,7 +31,8 @@ setup.py, possibly setting the PYTHONPATH to point at pijnu:
 
 ::
  
- env PYTHONPATH=path/to/pijnu python setup.py build_parsers
+ cd /PATH/TO/mediawiki-parser/
+ env PYTHONPATH=/PATH/TO/pijnu python setup.py build_parsers
 
 How to test
 ===========
@@ -143,3 +146,7 @@ This tool should be able to render any wikitext page into text or HTML.
 However, it does not intent to be bug-for-bug compatible with MW. For instance, using HTML entities in template calls (e.g.: `'{{temp&copy;late}}`') is currently not supported.
 
 Please don't hesitate to report bugs that you may find when using this tool.
+
+Special thanks
+==============
+ * To Nicholas Burlett for his directory restructure, performance improvements and other fixes
