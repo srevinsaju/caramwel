@@ -56,9 +56,13 @@ if __name__ == '__main__':
     setup(
         name="mediawiki-parser",
         author="Erik Rose, Peter Potrowl",
-        version="0.3.0",
-        description=("",),
+        author_email="grinch@grinchcentral.com, peter.potrowl@gmail.com",
+        url="https://github.com/peter17/mediawiki-parser",
+        version="0.3.1",
+        license="GPL v3",
+        description="A parser for the MediaWiki syntax, based on Pijnu.",
         long_description=read('README.rst'),
+        keywords="MediaWiki, parser, syntax",
         packages=[
             "mediawiki_parser"
             ],
