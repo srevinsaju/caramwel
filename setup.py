@@ -58,16 +58,23 @@ if __name__ == '__main__':
         author="Erik Rose, Peter Potrowl",
         author_email="grinch@grinchcentral.com, peter.potrowl@gmail.com",
         url="https://github.com/peter17/mediawiki-parser",
-        version="0.3.1",
+        version="0.3.3",
         license="GPL v3",
         description="A parser for the MediaWiki syntax, based on Pijnu.",
         long_description=read('README.rst'),
         keywords="MediaWiki, parser, syntax",
-        packages=[
-            "mediawiki_parser"
-            ],
+        packages=["mediawiki_parser"],
         scripts=[],
         data_files=[],
-        install_requires=[ ],
-        cmdclass={'build_parsers': build_parsers, 'build': build}
+        install_requires=['pijnu'],
+        cmdclass={'build_parsers': build_parsers, 'build': build},
+        classifiers=[
+          'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
+          'Development Status :: 4 - Beta',
+          'Topic :: Software Development',
+          'Topic :: Text Processing',
+          'Topic :: Software Development :: Libraries :: Python Modules',
+          'Intended Audience :: Developers',
+          'Programming Language :: Python',
+          ]
     )

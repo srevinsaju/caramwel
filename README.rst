@@ -10,8 +10,14 @@ Requirements
 ============
 
 This parser relies on Pijnu. You must install the latest version of Pijnu, available at: https://github.com/peter17/pijnu
+
 Do not use the version from http://spir.wikidot.com, which is outdated.
 
+For basic and simple installation, just try:
+
+::
+
+ pip install mediawiki-parser
 
 How it works
 ============
@@ -73,10 +79,10 @@ In order to use this tool to render wikitext into HTML in a Python program, you 
  interwiki = {}
  namespaces = {}
  
- from preprocessor import make_parser
+ from mediawiki_parser.preprocessor import make_parser
  preprocessor = make_parser(templates)
 
- from html import make_parser
+ from mediawiki_parser.html import make_parser
  parser = make_parser(allowed_tags, allowed_self_closing_tags, allowed_attributes, interwiki, namespaces)
 
  preprocessed_text = preprocessor.parse(source)
@@ -98,10 +104,10 @@ In order to use this tool to render wikitext into text in a Python program, you 
 
  templates = {}
  
- from preprocessor import make_parser
+ from mediawiki_parser.preprocessor import make_parser
  preprocessor = make_parser(templates)
 
- from text import make_parser
+ from mediawiki_parser.text import make_parser
  parser = make_parser()
 
  preprocessed_text = preprocessor.parse(source)
@@ -118,7 +124,7 @@ If you just want to replace the templates in a given wikitext, you can just call
 
  templates = {}
  
- from preprocessor import make_parser
+ from mediawiki_parser.preprocessor import make_parser
  preprocessor = make_parser(templates)
 
  output = preprocessor.parse(source)
