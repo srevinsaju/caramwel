@@ -3,6 +3,7 @@ from __future__ import print_function
 from unittest import TestCase as UnitTestCase
 
 from pijnu import makeParser
+from pijnu import py3compat
 
 from mediawiki_parser import preprocessor, raw, text, html
 
@@ -11,7 +12,7 @@ class TestCase(UnitTestCase):
         try:
             return super(TestCase, self).assertEquals(x, y, *args, **kwargs)
         except AssertionError:
-            if isinstance(x, basestring) and isinstance(y, basestring):
+            if isinstance(x, py3compat.string_types) and isinstance(y, py3compat.string_types):
                 import difflib
                 print("%s"%x)
                 print("*****\n%s"%y)
@@ -32,7 +33,7 @@ class PreprocessorTestCase(TestCase):
         return preprocessor.make_parser(templates)
 
     def parsed_equal_string(self, source, result, templates={}):
-        self.assertEquals(unicode(self._grammar(templates).parseTest(source).value), result)
+        self.assertEquals(py3compat.text_type(self._grammar(templates).parseTest(source).value), result)
 
 
 class ParserTestCase(TestCase):
@@ -51,7 +52,7 @@ class ParserTestCase(TestCase):
 
     def parsed_equal_string(self, source, result, method_name, templates={}):
         preprocessed = self._preprocessor(templates).parseTest(source).value
-        self.assertEquals(unicode(self._grammar(method_name).parseTest(preprocessed).value), result)
+        self.assertEquals(py3compat.text_type(self._grammar(method_name).parseTest(preprocessed).value), result)
 
     def parsed_equal_tree(self, source, result, method_name, templates={}):
         preprocessed = self._preprocessor(templates).parseTest(source).value
@@ -88,4 +89,4 @@ class PostprocessorTestCase(TestCase):
 
     def parsed_equal_string(self, source, result, method_name, templates={}, postprocessor='raw'):
         preprocessed = self._preprocessor(templates).parseTest(source).value
-        self.assertEquals(unicode(self._grammar(method_name, postprocessor).parseTest(preprocessed).leaves()), result)
+        self.assertEquals(py3compat.text_type(self._grammar(method_name, postprocessor).parseTest(preprocessed).leaves()), result)

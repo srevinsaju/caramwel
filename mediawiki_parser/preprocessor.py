@@ -1,3 +1,4 @@
+from pijnu import py3compat
 from .constants import html_entities
 
 templates = {}
@@ -48,8 +49,7 @@ def substitute_template(node):
             parameters = {}
             if len(node.value) > 1:
                 for parameter in node.value[1].value:
-                    if isinstance(parameter.value, unicode) or \
-                       isinstance(parameter.value, str) or \
+                    if isinstance(parameter.value, py3compat.string_types) or \
                        len(parameter.value) == 1:
                         # It is a standalone parameter
                         count += 1 
