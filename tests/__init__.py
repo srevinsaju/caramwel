@@ -1,4 +1,5 @@
 # -*- coding: utf8 -*-
+from __future__ import print_function
 from unittest import TestCase as UnitTestCase
 
 from pijnu import makeParser
@@ -12,11 +13,11 @@ class TestCase(UnitTestCase):
         except AssertionError:
             if isinstance(x, basestring) and isinstance(y, basestring):
                 import difflib
-                print "%s"%x
-                print "*****\n%s"%y
+                print("%s"%x)
+                print("*****\n%s"%y)
                 s = difflib.SequenceMatcher(a=x, b=y)
                 for opcode in s.get_opcodes():
-                    print "%6s a[%d:%d] b[%d:%d]" % opcode
+                    print("%6s a[%d:%d] b[%d:%d]" % opcode)
             raise
 
 

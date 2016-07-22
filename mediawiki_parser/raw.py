@@ -1,4 +1,5 @@
-from constants import html_entities
+from __future__ import absolute_import
+from .constants import html_entities
 from mediawiki_parser import wikitextParser
 
 def toolset():

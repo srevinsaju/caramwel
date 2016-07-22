@@ -1,7 +1,8 @@
-from constants import html_entities
+from __future__ import absolute_import
+from .constants import html_entities
 from pijnu.library.node import Nil, Nodes, Node
 from mediawiki_parser import wikitextParser
-import apostrophes
+from . import apostrophes
 
 def toolset(interwiki, namespaces):
     tags_stack = []

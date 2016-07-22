@@ -1,4 +1,4 @@
-from constants import html_entities
+from .constants import html_entities
 
 templates = {}
 parsed_templates = {}  # Caches templates, to accelerate and avoid infinite loops

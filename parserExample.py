@@ -1,9 +1,10 @@
 # -*- coding: utf8 -*-
 
+from __future__ import print_function
 import time
 import codecs
 
-print "*** Parsing to HTML ***"
+print("*** Parsing to HTML ***")
 
 start_time = time.time()
 
@@ -73,9 +74,9 @@ output = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org
 file("article.htm", "w").write(output.encode('UTF-8'))
 
 end_time = time.time()
-print "Parsed and rendered in", end_time - start_time, "s."
+print("Parsed and rendered in", end_time - start_time, "s.")
 
-print "*** Parsing to text ***"
+print("*** Parsing to text ***")
 
 start_time = time.time()
 
@@ -99,4 +100,4 @@ output = tree.leaves()
 file("article.txt", "w").write(output.encode('UTF-8'))
 
 end_time = time.time()
-print "Parsed and rendered in", end_time - start_time, "s."
+print("Parsed and rendered in", end_time - start_time, "s.")
