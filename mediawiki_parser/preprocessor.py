@@ -1,5 +1,12 @@
-from pijnu import py3compat
+import py3compat
+import sys
+
 from .constants import html_entities
+
+# Fix for Python3
+if sys.hexversion >= 0x3000000:
+    def unichr(c):
+        return chr(c)
 
 templates = {}
 parsed_templates = {}  # Caches templates, to accelerate and avoid infinite loops
@@ -52,7 +59,7 @@ def substitute_template(node):
                     if isinstance(parameter.value, py3compat.string_types) or \
                        len(parameter.value) == 1:
                         # It is a standalone parameter
-                        count += 1 
+                        count += 1
                         parameters['%s' % count] = parameter.value
                     elif len(parameter.value) == 2 and \
                          parameter.value[0].tag == 'parameter_name' and \
@@ -95,7 +102,7 @@ def parse_template(template, parameters):
     toolset['substitute_template_parameter'] = subst_param
     parser = preprocessorParser.make_parser(toolset)
     result = parser.parse(template)
-    
+
     # We reinitialize this so that we won't pollute other templates with our values
     toolset['substitute_template_parameter'] = substitute_template_parameter
     return result.value

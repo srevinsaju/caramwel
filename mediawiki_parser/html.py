@@ -5,7 +5,7 @@ from pijnu.library.node import Nil, Nodes, Node
 from mediawiki_parser import wikitextParser
 from . import apostrophes
 
-try: 
+try:
     import pygments
 except ImportError:
     pygments = None
@@ -29,7 +29,7 @@ def toolset(allowed_tags, allowed_autoclose_tags, allowed_attributes, interwiki,
 
     pygment_options = {'lang': "text"}
 
-    for namespace, value in namespaces.iteritems():
+    for namespace, value in namespaces.items():
         assert value in range(16), "Incorrect value for namespaces"
     """
     Predefined namespaces; source: includes/Defines.php of MediaWiki-1.17.0
@@ -48,7 +48,7 @@ def toolset(allowed_tags, allowed_autoclose_tags, allowed_attributes, interwiki,
     'NS_HELP', 12
     'NS_HELP_TALK', 13
     'NS_CATEGORY', 14
-    'NS_CATEGORY_TALK', 15 
+    'NS_CATEGORY_TALK', 15
     """
 
     def balance_tags(tag=None):
@@ -139,7 +139,7 @@ def toolset(allowed_tags, allowed_autoclose_tags, allowed_attributes, interwiki,
             for i in range(len(attributes)):
                 attribute = process_attribute(attributes[i], allowed_tag)
                 if attribute is not '':
-                    result += ' ' + attribute 
+                    result += ' ' + attribute
         else:
             raise Exception("Bad AST shape!")
         return result
@@ -154,7 +154,7 @@ def toolset(allowed_tags, allowed_autoclose_tags, allowed_attributes, interwiki,
         elif tag_name in allowed_tags:
             attributes = process_attributes(node, True)
             tags_stack.append(tag_name)
-            node.value = '<%s%s>' % (tag_name, attributes) 
+            node.value = '<%s%s>' % (tag_name, attributes)
         else:
             attributes = process_attributes(node, False)
             node.value = '&lt;%s%s&gt;' % (tag_name, attributes)
@@ -172,7 +172,7 @@ def toolset(allowed_tags, allowed_autoclose_tags, allowed_attributes, interwiki,
         tag_name = node.value[0].value
         if tag_name in allowed_autoclose_tags:
             attributes = process_attributes(node, True)
-            node.value = '<%s%s />' % (tag_name, attributes) 
+            node.value = '<%s%s />' % (tag_name, attributes)
         else:
             attributes = process_attributes(node, False)
             node.value = '&lt;%s%s /&gt;' % (tag_name, attributes)
@@ -220,7 +220,7 @@ def toolset(allowed_tags, allowed_autoclose_tags, allowed_attributes, interwiki,
                 result += '\t<th%s>%s</th>\n' % content
         else:
             content = render_cell_content(node)
-            result = '\t<th%s>%s</th>\n' % content            
+            result = '\t<th%s>%s</th>\n' % content
         if result != '':
             node.value = result
 
@@ -232,7 +232,7 @@ def toolset(allowed_tags, allowed_autoclose_tags, allowed_attributes, interwiki,
                 result += '\t<td%s>%s</td>\n' % content
         else:
             content = render_cell_content(node)
-            result = '\t<td%s>%s</td>\n' % content            
+            result = '\t<td%s>%s</td>\n' % content
         if result != '':
             node.value = result
 
@@ -287,13 +287,13 @@ def toolset(allowed_tags, allowed_autoclose_tags, allowed_attributes, interwiki,
         else:
             if node.value != node.NIL:
                 attribs = " %s"%(node.leaves(),)
-            else: 
+            else:
                 attribs = ""
             node.value = u"<pre><code%s>"%attribs
 
     def render_source_text(node):
         if not use_pygments:
-            node.value = content(node).replace('<', '&lt;').replace('>', '&gt;') 
+            node.value = content(node).replace('<', '&lt;').replace('>', '&gt;')
         else:
             node.value = content(node)
 
@@ -337,7 +337,7 @@ def toolset(allowed_tags, allowed_autoclose_tags, allowed_attributes, interwiki,
         result = '<dl>\n'
         #import pdb; pdb.set_trace()
         def tagtype(value):
-            if value.tag in ['semi_colon_list_leaf', '@semi_colon_sub_list@']: 
+            if value.tag in ['semi_colon_list_leaf', '@semi_colon_sub_list@']:
                 return 'dt'
             else:
                 return 'dd'
@@ -502,7 +502,7 @@ def toolset(allowed_tags, allowed_autoclose_tags, allowed_attributes, interwiki,
 
 def make_parser(allowed_tags=[], allowed_autoclose_tags=[], allowed_attributes=[], interwiki={}, namespaces={}, use_pygments=False):
     """Constructs the parser for the HTML backend.
-    
+
     :arg allowed_tags: List of the HTML tags that should be allowed in the parsed wikitext.
             Opening tags will be closed. Closing tags with no opening tag will be removed.
             All the tags that are not in the list will be output as &lt;tag&gt;.

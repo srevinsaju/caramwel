@@ -1,6 +1,7 @@
 # -*- coding: utf8 -*-
 
-from pijnu import py3compat
+import py3compat
+
 from . import ParserTestCase
 
 

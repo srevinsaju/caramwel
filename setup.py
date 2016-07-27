@@ -26,13 +26,13 @@ def makeparsers(force=False):
     inputFile = "preprocessor.pijnu"
     outputFile = os.path.join("mediawiki_parser", "preprocessorParser.py")
     if force or inputNewer(inputFile, outputFile):
-        preprocessorGrammar = file(inputFile).read()
+        preprocessorGrammar = open(inputFile).read()
         makeParser(preprocessorGrammar, outputPath="mediawiki_parser")
 
     inputFile = "mediawiki.pijnu"
     outputFile = os.path.join("mediawiki_parser", "wikitextParser.py")
     if force or inputNewer(inputFile, outputFile):
-        mediawikiGrammar = file(inputFile).read()
+        mediawikiGrammar = open(inputFile).read()
         makeParser(mediawikiGrammar, outputPath="mediawiki_parser")
 
 class build_parsers(Command):
@@ -49,7 +49,7 @@ class build_parsers(Command):
             makeparsers(self.force)
 
 class build(_build):
-    sub_commands = [ ('build_parsers', None) ] + _build.sub_commands 
+    sub_commands = [ ('build_parsers', None) ] + _build.sub_commands
 
 
 if __name__ == '__main__':
@@ -58,7 +58,7 @@ if __name__ == '__main__':
         author="Erik Rose, Peter Potrowl",
         author_email="grinch@grinchcentral.com, peter.potrowl@gmail.com",
         url="https://github.com/peter17/mediawiki-parser",
-        version="0.3.3",
+        version="0.4.0",
         license="GPL v3",
         description="A parser for the MediaWiki syntax, based on Pijnu.",
         long_description=read('README.rst'),
@@ -66,7 +66,7 @@ if __name__ == '__main__':
         packages=["mediawiki_parser"],
         scripts=[],
         data_files=[],
-        install_requires=['pijnu'],
+        install_requires=['pijnu>=20160727'],
         cmdclass={'build_parsers': build_parsers, 'build': build},
         classifiers=[
           'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',

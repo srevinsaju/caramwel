@@ -31,7 +31,7 @@ class ListsTests(ParserTestCase):
 
     def test_3_hash_list(self):
         source = "### ''other text''\n"
-        result = "[list:[@number_sub_list@:[@number_sub_list@:[number_list_leaf:[raw_text:' \'\'other text\'\'']]]]]"
+        result = '[list:[@number_sub_list@:[@number_sub_list@:[number_list_leaf:[raw_text:" \'\'other text\'\'"]]]]]'
         self.parsed_equal_string(source, result, None)
 
     def test_1_colon_list(self):

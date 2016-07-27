@@ -27,7 +27,7 @@ def testit(content):
     #return preprocessed_text.treeView()
 
 if __name__ == "__main__":
-    content = file("bigfile.wiki", "r").read()
+    content = open("bigfile.wiki", "r").read()
     cProfile.run('testit(content)', 'results')
     results = pstats.Stats('results')
     results.strip_dirs()
@@ -35,7 +35,7 @@ if __name__ == "__main__":
     results.print_stats()
     results.print_callers('pattern.py', .2)
 
-    f = file("bigfile.html", "w+")
+    f = open("bigfile.html", "w+")
     f.truncate()
     f.write( foo )
 

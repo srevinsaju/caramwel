@@ -1,3 +1,7 @@
+.. image:: https://travis-ci.org/peter17/mediawiki-parser.svg?branch=master
+   :alt: Build Status
+   :target: https://travis-ci.org/peter17/mediawiki-parser
+
 Presentation
 ============
 
@@ -36,7 +40,7 @@ grammars before you can use mediawiki-parser. You can build them through
 setup.py, possibly setting the PYTHONPATH to point at pijnu:
 
 ::
- 
+
  cd /PATH/TO/mediawiki-parser/
  env PYTHONPATH=/PATH/TO/pijnu python setup.py build_parsers
 
@@ -48,7 +52,7 @@ The current simplest way to test the tool is to put wikitext inside the wikitext
 ::
 
  python parser.py
- 
+
 and the wikitext will be rendered as HTML in the article.htm file.
 
 Other ways might be implemented in the future.
@@ -78,7 +82,7 @@ In order to use this tool to render wikitext into HTML in a Python program, you 
  allowed_attributes = []
  interwiki = {}
  namespaces = {}
- 
+
  from mediawiki_parser.preprocessor import make_parser
  preprocessor = make_parser(templates)
 
@@ -93,7 +97,7 @@ The `output` string will contain the rendered HTML. You should describe the beha
  * if some HTML tags are allowed on your wiki, list them in the `allowed_tags` list (e.g.: `['center', 'big', 'small', 'span']`; avoid `'script'` and some others, for security reasons)
  * if some self-closing HTML tags are allowed on your wiki, list them in the `allowed_self_closing_tags` list (e.g.: `['br', 'hr']`; avoid `'script'` and some others, for security reasons)
  * if some HTML tags are allowed on your wiki, list the attributes they can use the `allowed_attributes` list (e.g.: `['style', 'class']`; avoid `'onclick'` and some others, for security reasons)
- * if you want to be able to use interwiki links, list the foreign wikis in the `interwiki` dict (e.g.: `{'fr': 'http://fr.wikipedia.org/wiki/'}`) 
+ * if you want to be able to use interwiki links, list the foreign wikis in the `interwiki` dict (e.g.: `{'fr': 'http://fr.wikipedia.org/wiki/'}`)
  * if you want to be able to distinguish between standard links, file inclusions or categories, list the namespaces of your wiki in the `namespaces` dict (e.g.: `{'Template': 10, 'Category': 14, 'File': 6}` where the numbers are the namespace codes used in MW)
 
 Example for text
@@ -103,7 +107,7 @@ In order to use this tool to render wikitext into text in a Python program, you 
 ::
 
  templates = {}
- 
+
  from mediawiki_parser.preprocessor import make_parser
  preprocessor = make_parser(templates)
 
@@ -123,7 +127,7 @@ If you just want to replace the templates in a given wikitext, you can just call
 ::
 
  templates = {}
- 
+
  from mediawiki_parser.preprocessor import make_parser
  preprocessor = make_parser(templates)
 

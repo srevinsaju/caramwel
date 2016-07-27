@@ -25,7 +25,7 @@ def toolset(interwiki, namespaces):
 
     style_tags = {'bold': '*', 'bold_close': '*', 'italic': '_', 'italic_close': '_'}
 
-    for namespace, value in namespaces.iteritems():
+    for namespace, value in namespaces.items():
         assert value in range(16), "Incorrect value for namespaces"
     """
     Predefined namespaces; source: includes/Defines.php of MediaWiki-1.17.0
@@ -44,7 +44,7 @@ def toolset(interwiki, namespaces):
     'NS_HELP', 12
     'NS_HELP_TALK', 13
     'NS_CATEGORY', 14
-    'NS_CATEGORY_TALK', 15 
+    'NS_CATEGORY_TALK', 15
     """
 
     def render_tag_p(attributes):
@@ -128,7 +128,7 @@ def toolset(interwiki, namespaces):
             for i in range(len(attributes)):
                 attribute = process_attribute(attributes[i], allowed_tag)
                 if attribute is not '':
-                    result += ' ' + attribute 
+                    result += ' ' + attribute
         else:
             raise Exception("Bad AST shape!")
         return result
@@ -141,7 +141,7 @@ def toolset(interwiki, namespaces):
         if tag_name in allowed_tags:
             attributes = process_attributes(node, True)
             tag_processor = allowed_tags[tag_name]
-            node.value = tag_processor(attributes) 
+            node.value = tag_processor(attributes)
         else:
             attributes = process_attributes(node, False)
             node.value = '<%s%s>' % (tag_name, attributes)
@@ -154,7 +154,7 @@ def toolset(interwiki, namespaces):
         if tag_name in allowed_tags:
             attributes = process_attributes(node, True)
             tag_processor = allowed_tags[tag_name]
-            node.value = tag_processor(attributes) 
+            node.value = tag_processor(attributes)
         else:
             attributes = process_attributes(node, False)
             node.value = '<%s%s />' % (tag_name, attributes)
@@ -194,7 +194,7 @@ def toolset(interwiki, namespaces):
                 result += '%s\t' % content
         else:
             content = render_cell_content(node)
-            result = '%s\t' % content            
+            result = '%s\t' % content
         if result != '':
             node.value = result
 
@@ -206,7 +206,7 @@ def toolset(interwiki, namespaces):
                 result += '%s\t' % content
         else:
             content = render_cell_content(node)
-            result = '%s\t' % content            
+            result = '%s\t' % content
         if result != '':
             node.value = result
 

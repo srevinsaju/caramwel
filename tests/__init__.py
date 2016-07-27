@@ -3,7 +3,8 @@ from __future__ import print_function
 from unittest import TestCase as UnitTestCase
 
 from pijnu import makeParser
-from pijnu import py3compat
+
+import py3compat
 
 from mediawiki_parser import preprocessor, raw, text, html
 

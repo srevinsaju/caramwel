@@ -2,6 +2,13 @@ from __future__ import absolute_import
 from .constants import html_entities
 from mediawiki_parser import wikitextParser
 
+import sys
+
+# Fix for Python3
+if sys.hexversion >= 0x3000000:
+    def unichr(c):
+        return chr(c)
+
 def toolset():
     def render_title1(node):
         pass

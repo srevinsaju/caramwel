@@ -10,10 +10,10 @@ start_time = time.time()
 
 # get the parser
 from pijnu import makeParser
-preprocessorGrammar = file("preprocessor.pijnu").read()
+preprocessorGrammar = open("preprocessor.pijnu").read()
 makeParser(preprocessorGrammar)
 
-mediawikiGrammar = file("mediawiki.pijnu").read()
+mediawikiGrammar = open("mediawiki.pijnu").read()
 makeParser(mediawikiGrammar)
 
 allowed_tags = ['p', 'span', 'b', 'i', 'small', 'center']
@@ -71,7 +71,7 @@ output = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org
 	<meta name="type" content="text/html; charset=utf-8" />
 	<title>Test!</title></head>""" + tree.leaves() + "</html>"
 
-file("article.htm", "w").write(output.encode('UTF-8'))
+open("article.htm", "w").write(output.encode('UTF-8'))
 
 end_time = time.time()
 print("Parsed and rendered in", end_time - start_time, "s.")
@@ -97,7 +97,7 @@ tree = parser.parse(preprocessed_text.leaves())
 
 output = tree.leaves()
 
-file("article.txt", "w").write(output.encode('UTF-8'))
+open("article.txt", "w").write(output.encode('UTF-8'))
 
 end_time = time.time()
 print("Parsed and rendered in", end_time - start_time, "s.")

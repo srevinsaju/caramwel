@@ -48,12 +48,12 @@ class TitlesTests(ParserTestCase):
 
     def test_italic_in_title(self):
         source = "== ''italic text'' ==\n"
-        result = "[title2:[raw_text:' \'\'italic text\'\' ']]"
+        result = '[title2:[raw_text:" \'\'italic text\'\' "]]'
         self.parsed_equal_string(source, result, None)
 
     def test_bold_in_title(self):
         source = "=== '''bold text''' ===\n"
-        result = "[title3:[raw_text:' \'\'\'bold text\'\'\' ']]"
+        result = '[title3:[raw_text:" \'\'\'bold text\'\'\' "]]'
         self.parsed_equal_string(source, result, None)
 
     def test_formatted_link_in_title(self):

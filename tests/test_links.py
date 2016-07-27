@@ -67,7 +67,7 @@ class LinksTests(ParserTestCase):
 
     def test_formatted_text_in_external_link(self):
         source = "[http://www.mozilla.org this is an ''external'' link]"
-        result = "[external_link:[url:'http://www.mozilla.org'  optional_link_text:[raw_text:'this is an \'\'external\'\' link']]]"
+        result = '[external_link:[url:\'http://www.mozilla.org\'  optional_link_text:[raw_text:"this is an \'\'external\'\' link"]]]'
         self.parsed_equal_string(source, result, 'inline')
 
     def test_spacetabs_in_external_link(self):
