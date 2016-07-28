@@ -3,6 +3,7 @@ from .constants import html_entities
 from pijnu.library.node import Nil, Nodes, Node
 from mediawiki_parser import wikitextParser
 from . import apostrophes
+import py3compat
 
 def toolset(interwiki, namespaces):
     tags_stack = []
@@ -99,7 +100,7 @@ def toolset(interwiki, namespaces):
     def render_entity(node):
         value = '%s' % node.leaf()
         if value in html_entities:
-            node.value = '%s' % unichr(html_entities[value])
+            node.value = '%s' % py3compat.unichr(html_entities[value])
         else:
             node.value = '&amp;%s;' % value
 

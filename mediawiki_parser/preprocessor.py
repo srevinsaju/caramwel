@@ -3,18 +3,13 @@ import sys
 
 from .constants import html_entities
 
-# Fix for Python3
-if sys.hexversion >= 0x3000000:
-    def unichr(c):
-        return chr(c)
-
 templates = {}
 parsed_templates = {}  # Caches templates, to accelerate and avoid infinite loops
 
 def substitute_named_entity(node):
     value = '%s' % node.leaf()
     if value in html_entities and value not in ['lt', 'gt']:
-        node.value = unichr(html_entities[value])
+        node.value = py3compat.unichr(html_entities[value])
     else:
         node.value = '&%s;' % value
 
@@ -24,7 +19,7 @@ def substitute_numbered_entity(node):
         # We eliminate some characters such as < and >
         if value in [60, 62]:
             raise Exception()
-        node.value = unichr(value)
+        node.value = py3compat.unichr(value)
     except:
         node.value = '&#%s;' % value
 

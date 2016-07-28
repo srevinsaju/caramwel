@@ -2,12 +2,8 @@ from __future__ import absolute_import
 from .constants import html_entities
 from mediawiki_parser import wikitextParser
 
+import py3compat
 import sys
-
-# Fix for Python3
-if sys.hexversion >= 0x3000000:
-    def unichr(c):
-        return chr(c)
 
 def toolset():
     def render_title1(node):
@@ -43,7 +39,7 @@ def toolset():
     def render_entity(node):
         value = '%s' % node.leaf()
         if value in html_entities:
-            node.value = '%s' % unichr(html_entities[value])
+            node.value = '%s' % py3compat.unichr(html_entities[value])
         else:
             node.value = '&%s;' % value
 
