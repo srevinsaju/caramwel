@@ -26,6 +26,11 @@ class SpecialCharsTests(ParserTestCase):
         result = "[raw_text:'This # should pass.']"
         self.parsed_equal_string(source, result, 'inline')
 
+    def test_slash_and_double_slash(self):
+        source = 'This / and this // should pass.'
+        result = "[raw_text:'This '  allowed_char:'/'  raw_text:' and this '  allowed_char:'/'  allowed_char:'/'  raw_text:' should pass.']"
+        self.parsed_equal_string(source, result, 'inline')
+
     def test_l_brace(self):
         source = 'This { should pass.'
         result = "[raw_text:'This '  allowed_char:'{'  raw_text:' should pass.']"

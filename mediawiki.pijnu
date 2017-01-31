@@ -79,7 +79,7 @@ def replace_by_8_spaces(node):
     SOURCE_TAG_START        : "<source"                                                             : drop
     SOURCE_TAG_GT           : GT                                                                    : drop
     SOURCE_LANG_NAME        : [a..zA..Z0..9 ]+
-    SOURCE_TAG_LANG         : "lang=" QUOTE_KEEP? SOURCE_LANG_NAME QUOTE_KEEP? 
+    SOURCE_TAG_LANG         : "lang=" QUOTE_KEEP? SOURCE_LANG_NAME QUOTE_KEEP?
     SOURCE_TAG_ATTRIBUTE    : ( SPACETABEOL* SOURCE_TAG_LANG )                                      : liftNode
     SOURCE_BEGIN            : SOURCE_TAG_START SOURCE_TAG_ATTRIBUTE? SPACETABEOL* SOURCE_TAG_GT (SPACETAB* EOL)? : render_source_open
     SOURCE_END              : "</source>"                                                           : drop
@@ -170,8 +170,10 @@ def replace_by_8_spaces(node):
     styled_text             : link / inline_url / html_comment / tag / entity
     allowed_char            : ESC_CHAR{1}                                                           : restore liftValue
     allowed_text            : !inline_end (raw_text / LT / GT / tab_to_space / allowed_char)        : liftNode
+    allowed_text_in_cell    : !(PIPE/BANG) allowed_text                                             : liftNode
     clean_inline            : (nowiki / source / styled_text / raw_text)+                           : @
     inline                  : (nowiki / source / styled_text / allowed_text)+                       : @
+    inline_cell             : (nowiki / source / styled_text / allowed_text_in_cell)+               : @
 
 # Paragraphs
 
@@ -236,7 +238,7 @@ def replace_by_8_spaces(node):
     table_parameters        : (HTML_attribute / clean_inline)+
     table_parameter         : table_parameters_pipe{0..1}                                           : liftValue
     table_wikitext          : list/horizontal_rule/preformatted_lines/title/table_structure
-    table_inline            : !(PIPE/BANG) clean_inline EOL?                                        : liftValue
+    table_inline            : !(PIPE/BANG) inline_cell EOL?                                         : liftValue
     table_paragraph         : (!(PIPE/BANG/TABLE_NEWLINE/TABLE_TITLE/TABLE_END) paragraph_line)     : render_paragraph
     table_multiline_content : (table_paragraph / source / preformatted / table_wikitext / EOL)*
     table_cell_content      : table_inline? table_multiline_content                                 : liftValue
@@ -252,7 +254,7 @@ def replace_by_8_spaces(node):
     table_line              : !TABLE_END (table_special_line / table_normal_line)                   : liftNode
     table_content           : (table_line / EOL)*                                                   : liftNode
     table_begin             : TABLE_BEGIN table_parameters*                                         : liftValue
-    table_structure         : table_begin SPACETABEOL* table_content TABLE_END                      : @ liftValue render_table 
+    table_structure         : table_begin SPACETABEOL* table_content TABLE_END                      : @ liftValue render_table
     table                   : table_structure EOL                                                   : liftValue
 
 # Top pattern

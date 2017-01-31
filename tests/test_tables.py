@@ -128,7 +128,7 @@ class TablesTests(ParserTestCase):
 | test1
 test2
 |}
-""" 
+"""
         result = """table:
    table_cell:
       table_cell_content:
@@ -138,6 +138,33 @@ test2
             table_paragraph:
                paragraph_line:
                   raw_text:test2"""
+        self.parsed_equal_tree(source, result, 'table')
+
+    def test_table_cell_with_slash(self):
+        source = """{|
+|AB||CD
+|-
+|E/F||GH
+|}
+"""
+        result = """table:
+   table_line_cells:
+      table_cell:
+         table_cell_content:
+            raw_text:AB
+      table_cell:
+         table_cell_content:
+            raw_text:CD
+   table_line_break:
+   table_line_cells:
+      table_cell:
+         table_cell_content:
+            raw_text:E
+            allowed_char:/
+            raw_text:F
+      table_cell:
+         table_cell_content:
+            raw_text:GH"""
         self.parsed_equal_tree(source, result, 'table')
 
     def test_table_with_css(self):
