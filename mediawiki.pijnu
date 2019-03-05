@@ -197,7 +197,7 @@ def replace_by_8_spaces(node):
 # Lists
 
     LIST_CHAR               : BULLET / HASH / COLON / SEMICOLON
-    list_leaf_content       : !LIST_CHAR inline EOL                                                 : liftValue
+    list_leaf_content       : !LIST_CHAR inline EOL?                                                : liftValue
 
     bullet_list_leaf        : BULLET optional_comment list_leaf_content                             : liftValue
     bullet_sub_list         : BULLET optional_comment list_item                                     : @
