@@ -46,10 +46,10 @@ templates = {'listen': u"""{| style="text-align:center; background: #f9f9f9; col
 """,
             '3e': '3<sup>e</sup>'}
 
-from preprocessor import make_parser
+from mediawiki_parser.preprocessor import make_parser
 preprocessor = make_parser(templates)
 
-from html import make_parser
+from mediawiki_parser.html import make_parser
 parser = make_parser(allowed_tags, allowed_autoclose_tags, allowed_parameters, interwiki, namespaces)
 
 # import the source in a utf-8 string
@@ -71,7 +71,7 @@ output = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org
 	<meta name="type" content="text/html; charset=utf-8" />
 	<title>Test!</title></head>""" + tree.leaves() + "</html>"
 
-open("article.htm", "w").write(output.encode('UTF-8'))
+open("article.htm", "w").write(output)
 
 end_time = time.time()
 print("Parsed and rendered in", end_time - start_time, "s.")
@@ -80,7 +80,7 @@ print("*** Parsing to text ***")
 
 start_time = time.time()
 
-from text import make_parser
+from mediawiki_parser.text import make_parser
 parser = make_parser(interwiki, namespaces)
 
 # import the source in a utf-8 string
@@ -97,7 +97,7 @@ tree = parser.parse(preprocessed_text.leaves())
 
 output = tree.leaves()
 
-open("article.txt", "w").write(output.encode('UTF-8'))
+open("article.txt", "w").write(output)
 
 end_time = time.time()
 print("Parsed and rendered in", end_time - start_time, "s.")
